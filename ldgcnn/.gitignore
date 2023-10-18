@@ -1,0 +1,16 @@
+*.npy
+*.obj
+*.jpg
+*.png
+*.log
+*.gif
+*.pdf
+*.idea*
+*.pyc
+*.zip
+*.h5
+*.h5
+*modelnet40_ply_hdf5_2048*
+*PartAnnotation*
+*hdf5_data*
+*test_results*
