@@ -20,7 +20,7 @@ def _variable_on_cpu(name, shape, initializer, use_fp16=False, trainable=True):
   """
   with tf.device('/cpu:0'):
     dtype = tf.float16 if use_fp16 else tf.float32
-    var = tf.get_variable(name, shape, initializer=initializer, dtype=dtype, trainable=trainable)
+    var = tf.compat.v1.get_variable(name, shape, initializer=initializer, dtype=dtype, trainable=trainable)
   return var
 
 def _variable_with_weight_decay(name, shape, stddev, wd, use_xavier=True):
@@ -47,7 +47,7 @@ def _variable_with_weight_decay(name, shape, stddev, wd, use_xavier=True):
   var = _variable_on_cpu(name, shape, initializer)
   if wd is not None:
     weight_decay = tf.multiply(tf.nn.l2_loss(var), wd, name='weight_loss')
-    tf.add_to_collection('losses', weight_decay)
+    tf.compat.v1.add_to_collection('losses', weight_decay)
   return var
 
 
@@ -146,9 +146,9 @@ def conv2d(inputs,
   Returns:
     Variable tensor
   """
-  with tf.variable_scope(scope) as sc:
+  with tf.compat.v1.variable_scope(scope) as sc:
       kernel_h, kernel_w = kernel_size
-      num_in_channels = inputs.get_shape()[-1].value
+      num_in_channels = inputs.get_shape()[-1]
       kernel_shape = [kernel_h, kernel_w,
                       num_in_channels, num_output_channels]
       kernel = _variable_with_weight_decay('weights',
@@ -472,7 +472,7 @@ def batch_norm_template(inputs, is_training, scope, moments_dims, bn_decay):
   Return:
       normed:        batch-normalized maps
   """
-  with tf.variable_scope(scope) as sc:
+  with tf.compat.v1.variable_scope(scope) as sc:
     num_channels = inputs.get_shape()[-1].value
     beta = tf.Variable(tf.constant(0.0, shape=[num_channels]),
                        name='beta', trainable=True)
@@ -652,7 +652,7 @@ def pairwise_distance(point_cloud):
   point_cloud_transpose = tf.transpose(point_cloud, perm=[0, 2, 1])
   point_cloud_inner = tf.matmul(point_cloud, point_cloud_transpose)
   point_cloud_inner = -2*point_cloud_inner
-  point_cloud_square = tf.reduce_sum(tf.square(point_cloud), axis=-1, keep_dims=True)
+  point_cloud_square = tf.reduce_sum(tf.square(point_cloud), axis=-1, keepdims=True)
   point_cloud_square_tranpose = tf.transpose(point_cloud_square, perm=[0, 2, 1])
   return point_cloud_square + point_cloud_inner + point_cloud_square_tranpose
 
@@ -866,9 +866,9 @@ def get_edge_feature(point_cloud, nn_idx, k=20):
   point_cloud_central = point_cloud
 
   point_cloud_shape = point_cloud.get_shape()
-  batch_size = point_cloud_shape[0].value
-  num_points = point_cloud_shape[1].value
-  num_dims = point_cloud_shape[2].value
+  batch_size = point_cloud_shape[0] #point_cloud_shape[0].value
+  num_points = point_cloud_shape[1] #point_cloud_shape[1].value
+  num_dims = point_cloud_shape[2] #point_cloud_shape[2].value
 
   idx_ = tf.range(batch_size) * num_points
   idx_ = tf.reshape(idx_, [batch_size, 1, 1]) 
