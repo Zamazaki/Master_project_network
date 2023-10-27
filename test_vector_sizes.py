@@ -12,7 +12,7 @@ image_path = "./test_data/F0001_AN01WH_F2D.bmp" #"./BU_3DFE/F0001/F0001_AN01WH_F
 model = GroupFace(resnet=50)
 group_inter, final, group_prob, group_label = model(torch_loader(cv2.imread(image_path)).unsqueeze(0))
 feat = final / torch.norm(final, p=2, keepdim=False)
-feat = feat.detach().cpu().reshape(1, 256).numpy()
+feat = feat.detach().cpu().reshape(1, 1024).numpy()
 
 print(f"Dimensions GroupFace global feature vector {feat.shape}")
 
@@ -31,3 +31,7 @@ print(f"New dimensions of point cloud {point_cloud.shape}")
 # Send point cloud through feature extraction
 global_feature = calc_ldgcnn_feature(point_cloud, tf.cast(False, tf.bool), None)
 print(f"Dimensions LDGCNN global feature vector {global_feature.shape}")
+
+#print(feat)
+#print(global_feature)
+#tf.print(global_feature)

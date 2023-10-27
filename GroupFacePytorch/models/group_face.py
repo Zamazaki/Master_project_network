@@ -35,7 +35,7 @@ class GDN(nn.Module):
 
 
 class GroupFace(nn.Module):
-    def __init__(self, resnet=18, feature_dim=256, groups=4, mode='S', backbone_fc_dim=1024):
+    def __init__(self, resnet=18, feature_dim=1024, groups=4, mode='S', backbone_fc_dim=1024):
         super(GroupFace, self).__init__()
         self.mode = mode
         self.groups = groups
