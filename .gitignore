@@ -3,6 +3,7 @@ checkpoints
 cluster_im
 demo_eval
 demo_ims
+Paper_resources
 .idea
 log
 *.npy
