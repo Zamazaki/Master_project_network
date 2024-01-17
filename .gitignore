@@ -1,4 +1,5 @@
-BU_3DFE
+BU_3DFE.nosync
+.DS_Store
 checkpoints
 cluster_im
 demo_eval
