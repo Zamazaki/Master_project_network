@@ -1,0 +1,78 @@
+
+{ 
+  sams: [ "../Face/Face" ]
+  optsSams: [  ]
+  optsMorphs: [  ]
+  useDetailTextures: true
+  pose:
+  
+  { 
+    toHcs:
+    
+    { 
+      rot: 
+      { 
+        real: 1
+        imag: 
+        { 
+          m: [ 0 0 0 ]
+        }
+      }
+      trans: 
+      { 
+        m: [ -127.572201 172.2829055 -135.5165184 ]
+      }
+    }
+    scale: 1
+    rollRangeDegrees: 
+    { 
+      m: [ 0 0 ]
+    }
+    tiltRangeDegrees: 
+    { 
+      m: [ -30 30 ]
+    }
+    panRangeDegrees: 
+    { 
+      m: [ -45 45 ]
+    }
+  }
+  rend:
+  
+  { 
+    lightDirectionRange: 0.30000001192092896
+    backgroundColor: 
+    { 
+      m_c: [ 0 0 0 0 ]
+    }
+    imagePixelSize: 
+    { 
+      m: [ 512 512 ]
+    }
+    antiAliasBitDepth: 3
+    cameraFovDegrees: 17
+  }
+  outputFormat: ".jpg"
+  attributes:
+  
+  { 
+    genderDistro: -1
+    genderFixval: 0
+    age: 
+    { 
+      fixed: false
+      val: 0
+    }
+    caricature: 
+    { 
+      fixed: false
+      shape: 0
+      color: 0
+    }
+    asymmetry: 
+    { 
+      fixed: false
+      val: 0
+    }
+  }
+}
