@@ -3,7 +3,7 @@ from tensorflow import keras
 import tensorflow.keras.backend as K
 
 
-def __init_model_from_name__(name, input_shape=(112, 112, 3), weights="imagenet", **kwargs):
+def __init_model_from_name__(name, input_shape=(512, 512, 3), weights="imagenet", **kwargs):
     name_lower = name.lower()
     """ Basic model """
     if name_lower == "ghostnetv1":
@@ -18,7 +18,7 @@ def __init_model_from_name__(name, input_shape=(112, 112, 3), weights="imagenet"
                                 stem_strides=1,
                                 width_mul=1.3,
                                 num_ghost_module_v1_stacks=2,  # num of `ghost_module` stcks on the head, others are `ghost_module_multiply`, set `-1` for all using `ghost_module`
-                                input_shape=(112, 112, 3),
+                                input_shape=(512, 512, 3),
                                 num_classes=0,
                                 activation="prelu",
                                 classifier_activation=None,
@@ -37,7 +37,7 @@ def buildin_models(
     stem_model,
     dropout=1,
     emb_shape=512,
-    input_shape=(112, 112, 3),
+    input_shape=(512, 512, 3),
     output_layer="GDC",
     bn_momentum=0.99,
     bn_epsilon=0.001,
