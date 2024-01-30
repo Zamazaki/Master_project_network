@@ -29,10 +29,8 @@ point_cloud = tf.expand_dims(point_cloud, 0) # Add extra dimension so it fits th
 print(f"New dimensions of point cloud {point_cloud.shape}")
 
 # Send point cloud through feature extraction
-with tf.compat.v1.Session() as sess:
-    global_feature = calc_ldgcnn_feature(point_cloud, tf.cast(False, tf.bool), None).eval()
-    print(f"Dimensions LDGCNN global feature vector {global_feature.shape}")
-    print(f"First numbers of tensor: {global_feature[0]}, {global_feature[1]}, {global_feature[2]}")
+global_feature = calc_ldgcnn_feature(point_cloud, tf.cast(False, tf.bool), None)
+print(f"Dimensions LDGCNN global feature vector {global_feature.shape}")
 
 #print(feat)
 #print(global_feature)
