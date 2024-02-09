@@ -27,7 +27,7 @@ model.eval() # Set model to evaluation mode
 count = 0
 for i, data in enumerate(test_dataloader, 0): 
   x0, x1, label = data
-  concat = torch.cat((x0, x1), 0)
+  #concat = torch.cat((x0, x1), 0)
   output1, output2 = model(x0.to(device), x1.to(device))
 
   eucledian_distance = nnf.pairwise_distance(output1, output2)
@@ -37,7 +37,7 @@ for i, data in enumerate(test_dataloader, 0):
   else:
     label="Different identities"
     
-  plt.imshow(torchvision.utils.make_grid(concat))
+  #plt.imshow(torchvision.utils.make_grid(concat))
   print("Predicted Eucledian Distance:-", eucledian_distance.item())
   print("Actual Label:-",label)
   count = count + 1
