@@ -2,6 +2,7 @@ from tensorflow import keras
 import tensorflow as tf
 import GhostFaceNets.GhostFaceNets_with_Bias as gfb
 import GhostFaceNets.losses
+import torch
 import numpy as np
 import cv2
 
@@ -20,12 +21,7 @@ downscaled_face = np.expand_dims(downscaled_face, axis=0)
 
 feature_embedding = basic_model(downscaled_face) #cv2.imread(image_path)
 
-np.savetxt("feature_vectors/2d/feat2d_1.csv", feature_embedding, delimiter=",")
+#np.savetxt("feature_vectors/2d/feat2d_1.csv", feature_embedding, delimiter=",")
+torch.save(feature_embedding.numpy(), "feature_vectors/2d/feat2d_1.pt")
 
-#print(f"Dimensions GhostNet feature vector {feature_embedding.shape}") 
-
-#print("Whole tensor:")
-#np.set_printoptions(threshold=2000)
-#print(feature_embedding)
-#np.set_printoptions(threshold=1000)
 

@@ -44,4 +44,6 @@ with tf.Session(config=config) as sess:
         # Getting the feature vector from the feature extractor
         global_feature = np.squeeze(model.eval(feed_dict=feed_dict_cnn))
 
-        np.savetxt("feature_vectors/3d/feat3d_1.csv", global_feature, delimiter=",")
+        #np.savetxt("feature_vectors/3d/feat3d_1.csv", global_feature, delimiter=",")
+        #torch.save(torch.from_numpy(global_feature), "feature_vectors/3d/feat3d_1.pt")
+        torch.save(global_feature, "feature_vectors/3d/feat3d_1.pt")
