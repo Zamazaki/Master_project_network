@@ -5,12 +5,12 @@ import numpy as np
 # so a new system will be used for BU3D-FE and BU4D-FE
 
 path_feat_2d = "feature_vectors/2d"
-path_feat_3d = "feature_vectors/2d"
+path_feat_3d = "feature_vectors/3d"
 
 pairing_array = []
 
-feature_vectors_2d = sorted(os.listdir(path_feat_2d))
-feature_vectors_3d = sorted(os.listdir(path_feat_3d))
+feature_vectors_2d = ["2d/"+ feat for feat in sorted(os.listdir(path_feat_2d))]
+feature_vectors_3d = ["3d/"+ feat for feat in sorted(os.listdir(path_feat_3d))]
 
 # Assuming we have an equal amount of 2d and 3d feature vectors
 number_of_pairings = len(feature_vectors_2d)
