@@ -36,46 +36,31 @@ eighth_segment_start = twelfth_amount*9
 # Half of dataset is correctly matched
 for i in range(quarter_amount):
     # Correct pairing female.jpg female.obj
-    pairing_array.append(feature_vectors_2d[i])
-    pairing_array.append(feature_vectors_3d[i])
-    pairing_array.append(str(1))
+    pairing_array.append([feature_vectors_2d[i], feature_vectors_3d[i], str(1)])
     
     # Correct pairing male.jpg male.obj
-    pairing_array.append(feature_vectors_2d[eighth_segment_start + i])
-    pairing_array.append(feature_vectors_3d[eighth_segment_start + i])
-    pairing_array.append(str(1))
+    pairing_array.append([feature_vectors_2d[eighth_segment_start + i], feature_vectors_3d[eighth_segment_start + i], str(1)])
 
 # Other half is incorrectly matched in various ways
 for i in range(twelfth_amount):
     # Incorrect pairing female.jpg female.obj
-    pairing_array.append(feature_vectors_2d[second_segment_start + i])
-    pairing_array.append(feature_vectors_3d[third_segment_start + i])
-    pairing_array.append(str(0))
+    pairing_array.append([feature_vectors_2d[second_segment_start + i], feature_vectors_3d[third_segment_start + i], str(0)])
     
     # Incorrect pairing female.jpg female.obj
-    pairing_array.append(feature_vectors_2d[third_segment_start + i])
-    pairing_array.append(feature_vectors_3d[second_segment_start + i])
-    pairing_array.append(str(0))
-    
+    pairing_array.append([feature_vectors_2d[third_segment_start + i], feature_vectors_3d[second_segment_start + i], str(0)])
+
     # Incorrect pairing female.jpg male.obj
-    pairing_array.append(feature_vectors_2d[third_segment_start + i])
-    pairing_array.append(feature_vectors_3d[forth_segment_start  + i])
-    pairing_array.append(str(0))
+    pairing_array.append([feature_vectors_2d[third_segment_start + i], feature_vectors_3d[forth_segment_start + i], str(0)])
     
     # Incorrect pairing male.jpg female.obj
-    pairing_array.append(feature_vectors_2d[forth_segment_start + i])
-    pairing_array.append(feature_vectors_3d[third_segment_start + i])
-    pairing_array.append(str(0))
+    pairing_array.append([feature_vectors_2d[forth_segment_start + i], feature_vectors_3d[third_segment_start + i], str(0)])
     
     # Incorrect pairing male.jpg male.obj
-    pairing_array.append(feature_vectors_2d[fifth_segment_start + i])
-    pairing_array.append(feature_vectors_3d[sixth_segment_start + i])
-    pairing_array.append(str(0))
-    
+    pairing_array.append([feature_vectors_2d[fifth_segment_start + i], feature_vectors_3d[sixth_segment_start + i], str(0)])
+
     # Incorrect pairing male.jpg male.obj
-    pairing_array.append(feature_vectors_2d[sixth_segment_start + i])
-    pairing_array.append(feature_vectors_3d[fifth_segment_start + i])
-    pairing_array.append(str(0))
-    
+    pairing_array.append([feature_vectors_2d[sixth_segment_start + i], feature_vectors_3d[fifth_segment_start + i], str(0)])
+
 # Save the array as a .csv
 np.savetxt("feature_vectors/feature_pairings.csv", pairing_array, delimiter=",", fmt='%s')
+print("Feature pairings saved to feature_pairings.csv")
