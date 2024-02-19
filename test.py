@@ -3,15 +3,15 @@ import torchvision
 import matplotlib.pyplot as plt 
 from conjoiner import Conjoiner
 import torch.nn.functional as nnf
+from dataset_loader import DatasetLoader
+import torchvision.transforms as transforms
+from torch.utils.data import DataLoader
 
 # Load the test dataset
-#test_dataset = SiameseDataset(training_csv=testing_csv,training_dir=testing_dir,
-#                                        transform=transforms.Compose([transforms.Resize((105,105)),
-#                                                                      transforms.ToTensor()
-#                                                                      ])
-#                                       )
+test_dataset = DatasetLoader(training_csv="feature_vectors/test/feature_pairings.csv",training_dir="feature_vectors/test/",
+                                        transform=transforms.Compose([transforms.ToTensor()]))
 
-#test_dataloader = DataLoader(test_dataset,num_workers=6,batch_size=1,shuffle=True)
+test_dataloader = DataLoader(test_dataset, num_workers=6, batch_size=1, shuffle=True)
 
 # Setup variables
 MODEL_PATH = "path/to/trained/model"
