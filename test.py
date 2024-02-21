@@ -8,13 +8,11 @@ import torchvision.transforms as transforms
 from torch.utils.data import DataLoader
 
 # Load the test dataset
-test_dataset = DatasetLoader(training_csv="feature_vectors/test/feature_pairings.csv",training_dir="feature_vectors/test/",
-                                        transform=transforms.Compose([transforms.ToTensor()]))
-
+test_dataset = DatasetLoader(training_csv="feature_vectors/test/feature_pairings.csv", training_dir="feature_vectors/test/")
 test_dataloader = DataLoader(test_dataset, num_workers=6, batch_size=1, shuffle=True)
 
 # Setup variables
-MODEL_PATH = "path/to/trained/model"
+MODEL_PATH = "checkpoints/model_5.pt"
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # Load the network
@@ -32,7 +30,7 @@ for i, data in enumerate(test_dataloader, 0):
 
   eucledian_distance = nnf.pairwise_distance(output1, output2)
     
-  if label==torch.FloatTensor([[0]]):
+  if int(label) == 1:
     label="Same identity"
   else:
     label="Different identities"
