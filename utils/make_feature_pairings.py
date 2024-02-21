@@ -4,10 +4,12 @@ import numpy as np
 # NOTICE: Current system is set up for FaceGen generated face pairs,
 # so a new system will be used for BU3D-FE and BU4D-FE
 
-path_feat_2d = "feature_vectors/2d"
-path_feat_3d = "feature_vectors/3d"
+path_feat_2d = "feature_vectors/validation/2d"
+path_feat_3d = "feature_vectors/validation/3d"
+path_save_file = "feature_vectors/validation/"
 
 pairing_array = []
+pairing_array.append(["2d","3d","label"]) # labels for the .csv file
 
 feature_vectors_2d = ["2d/"+ feat for feat in sorted(os.listdir(path_feat_2d))]
 feature_vectors_3d = ["3d/"+ feat for feat in sorted(os.listdir(path_feat_3d))]
@@ -62,5 +64,5 @@ for i in range(twelfth_amount):
     pairing_array.append([feature_vectors_2d[sixth_segment_start + i], feature_vectors_3d[fifth_segment_start + i], str(0)])
 
 # Save the array as a .csv
-np.savetxt("feature_vectors/feature_pairings.csv", pairing_array, delimiter=",", fmt='%s')
-print("Feature pairings saved to feature_pairings.csv")
+np.savetxt(f"{path_save_file}feature_pairings.csv", pairing_array, delimiter=",", fmt='%s')
+print(f"Feature pairings saved to {path_save_file}feature_pairings.csv")
