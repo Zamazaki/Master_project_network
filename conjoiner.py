@@ -1,15 +1,16 @@
 import torch.nn as nn
+import numpy as np
 
 # Create layers that hopefully sends features into common space
 class Conjoiner(nn.Module):
 
     def __init__(self):
         super(Conjoiner, self).__init__()
-        self.resizingLayer = nn.Linear(1024, 512) # LDGCNN prodices 1024 dimention feature vectors, so need to resize
+        self.resizingLayer = nn.Linear(1024, 512) # LDGCNN produces 1024 dimention feature vectors, so need to resize
         self.linearLayer1 = nn.Linear(512, 512) # Might not need this. If simplification is needed, remove it
         self.linearLayer2 = nn.Linear(512, 256)
 
-    def forward(self, point_cloud_feature, img_feature):
+    def forward(self, img_feature, point_cloud_feature):
         # Sending point cloud feature into common space
         pc_feat = self.resizingLayer(point_cloud_feature)
         pc_feat = self.linearLayer1(pc_feat)
@@ -19,4 +20,4 @@ class Conjoiner(nn.Module):
         img_feat = self.linearLayer1(img_feature)
         img_feat = self.linearLayer2(img_feat)
         
-        return img_feat, pc_feat
+        return np.squeeze(img_feat), pc_feat

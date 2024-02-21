@@ -6,13 +6,13 @@ from dataset_loader import DatasetLoader
 import torchvision.transforms as transforms
 from torch.utils.data import DataLoader
 
-def save_plot(x_axis, y_axis, xlabel, ylabel, title):
+def save_plot(x_axis, y_axis, xlabel, ylabel, title, save_name):
     plt.plot(x_axis, y_axis)
     plt.xlabel(xlabel)  
     plt.ylabel(ylabel)  
     plt.title(title) 
     #plt.show()
-    plt.savefig("plot_loss.png")
+    plt.savefig(save_name)
 
 class ContrastiveLoss(torch.nn.Module):
     """
@@ -42,55 +42,61 @@ class ContrastiveLoss(torch.nn.Module):
 def train(train_dataloader):
     loss=[]     
     for i, data in enumerate(train_dataloader,0):
-        feat0, feat1 , label = data
-        feat0, feat1 , label = feat0.cuda(), feat1.cuda(), label.cuda()
+        feature1, feature2 , label = data
+        if device == "cuda":
+            feature1, feature2 , label = feature1.cuda(), feature2.cuda(), label.cuda()
         
         optimizer.zero_grad()
-        output1, output2 = model(feat0, feat1)
+        output1, output2 = model(feature1, feature2)
+        print((output1.shape, output2.shape))
+        
         loss_contrastive = loss_function(output1, output2, label)
         loss_contrastive.backward()
         optimizer.step()
         loss.append(loss_contrastive.item())
+    loss = np.array(loss)
     return model, loss.mean()
 
 def eval(eval_dataloader):
     loss=[] 
     for i, data in enumerate(eval_dataloader,0):
       feature1, feature2 , label = data
-      feature1, feature2 , label = feature1.cuda(), feature2.cuda() , label.cuda()
+      if device == "cuda":
+        feature1, feature2 , label = feature1.cuda(), feature2.cuda() , label.cuda()
+      
       output1, output2 = model(feature1, feature2)
       loss_contrastive = loss_function(output1, output2, label)
       loss.append(loss_contrastive.item())
     loss = np.array(loss)
-    return loss.mean()/len(eval_dataloader)
+    return loss.mean()
 
 ############################ Ready network for training ####################
 
 # Setting up parameters
-NUM_EPOCHS = 10
+NUM_EPOCHS = 5
 LOSS_MARGIN = 1.0  # Possible to make it bigger, since we are dealing with cross-modality
 MODEL_PATH = "path/to/trained/model"
 
 training_dataset = DatasetLoader(
     "feature_vectors/train/feature_pairings.csv",
     "feature_vectors/train",
-    transform=transforms.Compose(
-        [transforms.ToTensor()]
-    ),
 )
 train_dataloader = DataLoader(training_dataset, num_workers=6, batch_size=12, shuffle=True)
 
 validation_dataset = DatasetLoader(
     "feature_vectors/validation/feature_pairings.csv",
     "feature_vectors/validation",
-    transform=transforms.Compose(
-        [transforms.ToTensor()]
-    ),
 )
 eval_dataloader = DataLoader(validation_dataset, num_workers=6, batch_size=12, shuffle=True)
 
+# Set the device to cuda
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
 # Declare network
-model = Conjoiner().cuda()
+if device == "cuda":
+    model = Conjoiner().cuda()
+else:
+    model = Conjoiner()
 
 # Declare Loss Function
 loss_function = ContrastiveLoss(LOSS_MARGIN)
@@ -98,15 +104,12 @@ loss_function = ContrastiveLoss(LOSS_MARGIN)
 # Declare Optimizer
 optimizer = torch.optim.Adam(model.parameters(), lr=1e-3, weight_decay=0.0005)
 
-# Set the device to cuda
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-
 # Load a previous checkpoint
-checkpoint = torch.load(MODEL_PATH)
+"""checkpoint = torch.load(MODEL_PATH)
 model.load_state_dict(checkpoint['model_state_dict'])
 optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
 epoch = checkpoint['epoch']
-loss = checkpoint['loss']
+loss = checkpoint['loss']"""
 
 counter=[]
 iteration_number = 0
@@ -134,8 +137,10 @@ for epoch in range(1, NUM_EPOCHS + 1):
             'optimizer_state_dict': optimizer.state_dict(),
             'loss': mean_loss,
             }, f"checkpoints/model_{epoch}.pt")
+        print(f"Model checkpoints/model_{epoch}.pt saved successfully") 
             
-save_plot(counter, loss_each_epoch, "Pairs seen", "Loss", "Loss per 12 face pairs seen")  
+save_plot(counter, loss_each_epoch, "Pairs seen", "Loss", "Loss per 12 face pairs seen", "plots/plot_loss.png")  
+save_plot(counter, eval_loss_each_epoch, "Pairs seen", "Eval loss", "Loss per 12 face pairs seen", "plots/plot_eval_loss.png")  
 
 # Save model at the end of training
 torch.save({
@@ -146,4 +151,4 @@ torch.save({
                 }, f"checkpoints/model_{NUM_EPOCHS}.pt")
 
 #torch.save(model.state_dict(), "checkpoints/model1.pt")
-#print("Model Saved Successfully") 
+print(f"Model checkpoints/model_{NUM_EPOCHS}.pt saved successfully") 
