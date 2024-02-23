@@ -3,8 +3,9 @@ from conjoiner import Conjoiner
 import matplotlib.pyplot as plt  
 import numpy as np
 from dataset_loader import DatasetLoader
-import torchvision.transforms as transforms
+#import torchvision.transforms as transforms
 from torch.utils.data import DataLoader
+from tqdm import tqdm
 
 def save_plot(x_axis, y_axis, xlabel, ylabel, title, save_name):
     plt.plot(x_axis, y_axis)
@@ -40,6 +41,9 @@ class ContrastiveLoss(torch.nn.Module):
 # Create train function
 # Boilerplate code from: https://towardsdatascience.com/a-friendly-introduction-to-siamese-networks-85ab17522942
 def train(train_dataloader):
+    # Set up progress bar
+    pbar = tqdm(total=len(train_dataloader))
+    
     loss=[]     
     for i, data in enumerate(train_dataloader,0):
         feature1, feature2 , label = data
@@ -48,13 +52,19 @@ def train(train_dataloader):
         
         optimizer.zero_grad()
         output1, output2 = model(feature1, feature2)
-        print((output1.shape, output2.shape))
         
         loss_contrastive = loss_function(output1, output2, label)
         loss_contrastive.backward()
         optimizer.step()
         loss.append(loss_contrastive.item())
+        
+        # Update progress bar
+        pbar.update(1)   
     loss = np.array(loss)
+    
+    # Close progress bar
+    pbar.close()
+    
     return model, loss.mean()
 
 def eval(eval_dataloader):
@@ -75,7 +85,8 @@ def eval(eval_dataloader):
 # Setting up parameters
 NUM_EPOCHS = 5
 LOSS_MARGIN = 1.0  # Possible to make it bigger, since we are dealing with cross-modality
-MODEL_PATH = "path/to/trained/model"
+MODEL_PATH = "checkpoints/model_10.pt"
+epochs_in_prev_model = 10
 
 training_dataset = DatasetLoader(
     "feature_vectors/train/feature_pairings.csv",
@@ -105,11 +116,11 @@ loss_function = ContrastiveLoss(LOSS_MARGIN)
 optimizer = torch.optim.Adam(model.parameters(), lr=1e-3, weight_decay=0.0005)
 
 # Load a previous checkpoint
-"""checkpoint = torch.load(MODEL_PATH)
+checkpoint = torch.load(MODEL_PATH)
 model.load_state_dict(checkpoint['model_state_dict'])
 optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
 epoch = checkpoint['epoch']
-loss = checkpoint['loss']"""
+loss = checkpoint['loss']
 
 counter=[]
 iteration_number = 0
@@ -117,7 +128,7 @@ loss_each_epoch = []
 eval_loss_each_epoch = []
 
 # Training loop
-for epoch in range(1, NUM_EPOCHS + 1):
+for epoch in range(1 + epochs_in_prev_model, NUM_EPOCHS + 1 + epochs_in_prev_model):
     # Train the model
     model, mean_loss = train(train_dataloader)
     eval_loss = eval(eval_dataloader)
@@ -130,7 +141,7 @@ for epoch in range(1, NUM_EPOCHS + 1):
     counter.append(iteration_number)
 
     # Save model throughout training
-    if epoch % 3 == 0 or mean_loss < min(loss_each_epoch):
+    if epoch % 3 == 0 or mean_loss < min(loss_each_epoch[:-1]):
         torch.save({
             'epoch': epoch,
             'model_state_dict': model.state_dict(),
@@ -139,16 +150,16 @@ for epoch in range(1, NUM_EPOCHS + 1):
             }, f"checkpoints/model_{epoch}.pt")
         print(f"Model checkpoints/model_{epoch}.pt saved successfully") 
             
-save_plot(counter, loss_each_epoch, "Pairs seen", "Loss", "Loss per 12 face pairs seen", "plots/plot_loss.png")  
-save_plot(counter, eval_loss_each_epoch, "Pairs seen", "Eval loss", "Loss per 12 face pairs seen", "plots/plot_eval_loss.png")  
+save_plot(counter, loss_each_epoch, "Pairs seen", "Loss", "Loss per 12 face pairs seen", "plots/plot_loss2.png")  
+save_plot(counter, eval_loss_each_epoch, "Pairs seen", "Eval loss", "Loss per 12 face pairs seen", "plots/plot_eval_loss2.png")  
 
 # Save model at the end of training
 torch.save({
-                'epoch': NUM_EPOCHS,
+                'epoch': NUM_EPOCHS + epochs_in_prev_model,
                 'model_state_dict': model.state_dict(),
                 'optimizer_state_dict': optimizer.state_dict(),
                 'loss': mean_loss,
-                }, f"checkpoints/model_{NUM_EPOCHS}.pt")
+                }, f"checkpoints/model_{NUM_EPOCHS + epochs_in_prev_model}.pt")
 
 #torch.save(model.state_dict(), "checkpoints/model1.pt")
-print(f"Model checkpoints/model_{NUM_EPOCHS}.pt saved successfully") 
+print(f"Model checkpoints/model_{NUM_EPOCHS + epochs_in_prev_model}.pt saved successfully") 
