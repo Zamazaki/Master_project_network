@@ -19,7 +19,7 @@ number_of_pairings = len(feature_vectors_2d)
 
 # If the amount is not dividable by 12, we throw an exception
 if not number_of_pairings % 12 == 0:
-    raise Exception("Remember that the number of features must be dividable by 12. And that the first half must be female, while the second half must be male.")
+    raise Exception(f"Remember that the number of features must be dividable by 12 (number of pairings: {number_of_pairings}), and that the first half must be female, while the second half must be male.")
 
 # Find a quarter and a twelfth of the total amount
 twelfth_amount = number_of_pairings//12
@@ -52,16 +52,16 @@ for i in range(twelfth_amount):
     pairing_array.append([feature_vectors_2d[third_segment_start + i], feature_vectors_3d[second_segment_start + i], str(0)])
 
     # Incorrect pairing female.jpg male.obj
-    pairing_array.append([feature_vectors_2d[third_segment_start + i], feature_vectors_3d[forth_segment_start + i], str(0)])
+    pairing_array.append([feature_vectors_2d[forth_segment_start + i], feature_vectors_3d[fifth_segment_start + i], str(0)])
     
     # Incorrect pairing male.jpg female.obj
-    pairing_array.append([feature_vectors_2d[forth_segment_start + i], feature_vectors_3d[third_segment_start + i], str(0)])
+    pairing_array.append([feature_vectors_2d[fifth_segment_start + i], feature_vectors_3d[forth_segment_start + i], str(0)])
     
     # Incorrect pairing male.jpg male.obj
-    pairing_array.append([feature_vectors_2d[fifth_segment_start + i], feature_vectors_3d[sixth_segment_start + i], str(0)])
+    pairing_array.append([feature_vectors_2d[sixth_segment_start + i], feature_vectors_3d[seventh_segment_start + i], str(0)])
 
     # Incorrect pairing male.jpg male.obj
-    pairing_array.append([feature_vectors_2d[sixth_segment_start + i], feature_vectors_3d[fifth_segment_start + i], str(0)])
+    pairing_array.append([feature_vectors_2d[seventh_segment_start + i], feature_vectors_3d[sixth_segment_start + i], str(0)])
 
 # Save the array as a .csv
 np.savetxt(f"{path_save_file}feature_pairings.csv", pairing_array, delimiter=",", fmt='%s')
