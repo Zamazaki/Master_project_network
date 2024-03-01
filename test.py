@@ -6,13 +6,14 @@ import torch.nn.functional as nnf
 from dataset_loader import DatasetLoader
 import torchvision.transforms as transforms
 from torch.utils.data import DataLoader
+import numpy as np
 
 # Load the test dataset
-test_dataset = DatasetLoader(training_csv="feature_vectors/test/feature_pairings.csv", training_dir="feature_vectors/test/")
-test_dataloader = DataLoader(test_dataset, num_workers=6, batch_size=1, shuffle=True)
+test_dataset = DatasetLoader(training_csv="feature_vectors/validation/feature_pairings.csv", training_dir="feature_vectors/validation/")
+test_dataloader = DataLoader(test_dataset, num_workers=6, batch_size=1, shuffle=False)
 
 # Setup variables
-MODEL_PATH = "checkpoints/model_5.pt"
+MODEL_PATH = "checkpoints/bigger_model_20.pt"
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # Load the network
@@ -21,9 +22,11 @@ checkpoint = torch.load(MODEL_PATH)
 model.load_state_dict(checkpoint['model_state_dict'])
 model.eval() # Set model to evaluation mode
 
+distance_same_identity = []
+distance_different_identity = []
+
 # Test the network
-count = 0
-for i, data in enumerate(test_dataloader, 0): 
+for i, data in enumerate(test_dataloader,0):
   x0, x1, label = data
   #concat = torch.cat((x0, x1), 0)
   output1, output2 = model(x0.to(device), x1.to(device))
@@ -31,13 +34,16 @@ for i, data in enumerate(test_dataloader, 0):
   eucledian_distance = nnf.pairwise_distance(output1, output2)
     
   if int(label) == 1:
-    label="Same identity"
+    print_label="Same identity"
+    distance_same_identity.append(eucledian_distance.item())
   else:
-    label="Different identities"
+    print_label="Different identities"
+    distance_different_identity.append(eucledian_distance.item())
     
   #plt.imshow(torchvision.utils.make_grid(concat))
   print("Predicted Eucledian Distance:-", eucledian_distance.item())
-  print("Actual Label:-",label)
-  count = count + 1
-  if count == 10:
-    break
+  print("Actual Label:-", print_label)
+  print("\n")
+  #if len(distance_same_identity) == 12:
+  #  break
+print(f"Mean same distance: {np.average(distance_same_identity)}\n Mean different distance: {np.average(distance_different_identity)}")
