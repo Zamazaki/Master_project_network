@@ -6,18 +6,24 @@ class Conjoiner(nn.Module):
 
     def __init__(self):
         super(Conjoiner, self).__init__()
+        self.adaptionLayer = nn.Linear(512, 512)
+        self.adaptionLayer2 = nn.Linear(512, 512)
+        self.adaptionLayer3 = nn.Linear(512, 512)
         self.resizingLayer = nn.Linear(1024, 512) # LDGCNN produces 1024 dimention feature vectors, so need to resize
         self.linearLayer1 = nn.Linear(512, 512) # Might not need this. If simplification is needed, remove it
         self.linearLayer2 = nn.Linear(512, 256)
-
+#TODO: Add more layers
     def forward(self, img_feature, point_cloud_feature):
         # Sending point cloud feature into common space
         pc_feat = self.resizingLayer(point_cloud_feature)
+        pc_feat = self.adaptionLayer3(pc_feat)
         pc_feat = self.linearLayer1(pc_feat)
         pc_feat = self.linearLayer2(pc_feat)
         
         # Sending image feature into common space
-        img_feat = self.linearLayer1(img_feature)
+        img_feat = self.adaptionLayer(img_feature)
+        img_feat = self.adaptionLayer2(img_feat)
+        img_feat = self.linearLayer1(img_feat)
         img_feat = self.linearLayer2(img_feat)
         
-        return img_feat[0], pc_feat
+        return img_feat, pc_feat
