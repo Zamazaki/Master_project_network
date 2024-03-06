@@ -20,4 +20,4 @@ class Conjoiner(nn.Module):
         img_feat = self.linearLayer1(img_feature)
         img_feat = self.linearLayer2(img_feat)
         
-        return np.squeeze(img_feat), pc_feat
+        return img_feat[0], pc_feat
