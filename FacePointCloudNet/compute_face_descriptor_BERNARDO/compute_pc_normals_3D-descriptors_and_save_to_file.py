@@ -244,7 +244,7 @@ def load_pc_and_compute_normals(args, model, folder):
         ### p_feature_from_PLY[:, :, :] = feat_from_PLY.cpu()  # 1x1x512
         #p_feature_norm_from_OBJ = torch.norm(p_feature_from_OBJ, p=2, dim=2)
         ### p_feature_norm_from_PLY = torch.norm(p_feature_from_PLY, p=2, dim=2)
-        path_feat_norm_from_OBJ = f'the_dump/{name}_3D_face_descriptor.pt'
+        path_feat_norm_from_OBJ = f'/cluster/home/emmalei/Master_project_network/feature_vectors/train/3d/{name}.pt' #_3D_face_descriptor
         ### path_feat_norm_from_PLY = image_path_PLY.replace(name+'.ply', '3D_face_descriptor_from_PLY.pt')
         print('Saving 3D face descriptor:', path_feat_norm_from_OBJ, end=' ... ')
         torch.save(feat_from_OBJ, path_feat_norm_from_OBJ)
