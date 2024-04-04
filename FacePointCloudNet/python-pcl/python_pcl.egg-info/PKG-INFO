@@ -1,0 +1,14 @@
+Metadata-Version: 2.1
+Name: python-pcl
+Version: 0.3.0rc1
+Summary: Python bindings for the Point Cloud Library (PCL). using Cython.
+Home-page: http://github.com/strawlab/python-pcl
+Author: John Stowers
+Author-email: john.stowers@gmail.com
+Maintainer: Tooru Oonuma
+Maintainer-email: t753github@gmail.com
+License: BSD
+Classifier: Programming Language :: Python :: 3.5
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Programming Language :: Python :: 3.7
+License-File: LICENSE
