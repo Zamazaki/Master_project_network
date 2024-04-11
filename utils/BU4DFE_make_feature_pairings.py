@@ -1,4 +1,3 @@
-import os
 import numpy as np
 
 path_save_file = "/cluster/home/emmalei/Master_project_network/feature_vectors/train/"
@@ -38,7 +37,7 @@ for i in range(1, 59):
             if F_rulette == 59:
                 F_rulette = 1
                
-            pairing_array.append([f"2d/feat2d_F{i:02d}{expressions[j]}_{k}.pt", f"3d/feat3d_F{F_rulette:02d}{expressions[j]}_{k}.pt", str(-1)])
+            pairing_array.append([f"2d/feat2d_F{i:02d}{expressions[j]}_{k}.pt", f"3d/feat3d_F{F_rulette:02d}{expressions[j]}_{k}.pt", str(0)])
             
             F_rulette += 1
             
@@ -47,7 +46,7 @@ for i in range(1, 59):
             if M_rulette == 44:
                 M_rulette = 1
                
-            pairing_array.append([f"2d/feat2d_F{i:02d}{expressions[j]}_{k}.pt", f"3d/feat3d_M{M_rulette:02d}{expressions[j]}_{k}.pt", str(-1)])
+            pairing_array.append([f"2d/feat2d_F{i:02d}{expressions[j]}_{k}.pt", f"3d/feat3d_M{M_rulette:02d}{expressions[j]}_{k}.pt", str(0)])
             
             M_rulette += 1
             
@@ -78,7 +77,7 @@ for i in range(1, 44):
             if F_rulette == 59:
                 F_rulette = 1
                
-            pairing_array.append([f"2d/feat2d_M{i:02d}{expressions[j]}_{k}.pt", f"3d/feat3d_F{F_rulette:02d}{expressions[j]}_{k}.pt", str(-1)])
+            pairing_array.append([f"2d/feat2d_M{i:02d}{expressions[j]}_{k}.pt", f"3d/feat3d_F{F_rulette:02d}{expressions[j]}_{k}.pt", str(0)])
             
             F_rulette += 1
             
@@ -91,7 +90,7 @@ for i in range(1, 44):
             if M_rulette == 44:
                 M_rulette = 1
                
-            pairing_array.append([f"2d/feat2d_M{i:02d}{expressions[j]}_{k}.pt", f"3d/feat3d_M{M_rulette:02d}{expressions[j]}_{k}.pt", str(-1)])
+            pairing_array.append([f"2d/feat2d_M{i:02d}{expressions[j]}_{k}.pt", f"3d/feat3d_M{M_rulette:02d}{expressions[j]}_{k}.pt", str(0)])
             
             M_rulette += 1
             
