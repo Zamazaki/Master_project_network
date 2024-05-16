@@ -80,44 +80,25 @@ def read_wrl_and_create_obj(in_file, out_file):
     
     return data
 
-input_folder = "/cluster/home/emmalei/Master_project_network/BU3DFE"
-output_folder = "/cluster/home/emmalei/Master_project_network/wrl_obj_test"
+input_folder = "/cluster/home/emmalei/Master_project_network/BU4DFE"
+output_folder = "/cluster/home/emmalei/Master_project_network/wrl_obj_validation"
 
-id_list = sorted(glob(os.path.join(input_folder, "*", ""))) #/cluster/home/emmalei/Master_project_network/BU4DFE/M034/
+id_list = sorted(glob(os.path.join(input_folder, "*", "")))[78:] #/cluster/home/emmalei/Master_project_network/BU4DFE/M034/
 #id_list.remove("/cluster/home/emmalei/Master_project_network/BU4DFE/BU_WrlViewer_V2/")
+print(id_list)
+chosen_frames = [3, 4, 26, 27]
 
-expressions = {"AN":"ANG", "DI":"DIS", "FE":"FEA", "HA":"HAP", "NE":"NEU", "SA":"SAD", "SU":"SUR"}
-
-#BU4DFE
-"""for id in id_list:
+for id in id_list:
     name_id = id[-5]+id[-3:-1]
     expression_folder = sorted(os.listdir(id))
     for expression in expression_folder:
         name_expression = expression[:3].upper()
-        for i in range(5, 26):
-            input_name = os.path.join(input_folder, id, expression, f'{i:03d}.wrl')
-            output_name = f"{output_folder}/feat3d_{name_id}{name_expression}_{i-5}.obj"
+        for i in range(1, 5):
+            input_name = os.path.join(input_folder, id, expression, f'{chosen_frames[i-1]:03d}.wrl')
+            output_name = f"{output_folder}/feat3d_{name_id}{name_expression}_{i}.obj"
             read_wrl_and_create_obj(input_name, output_name)
             
-            print(f"In: {input_name}\nOut: {output_name}\n")"""
-
-
-# BU3DFE
-for id in id_list:
-    name_id = id[-6]+id[-3:-1]
-    #for expression in expressions.keys():
-    #name_expression = expressions[expression]
-    faces_2d = sorted(glob(os.path.join(input_folder, id, '*F3D.wrl')))
-    for face_path in faces_2d: 
-        input_name = face_path #os.path.join(input_folder, id, f'{chosen_frames[i-1]:03d}.jpg')
-        output_name = f"{output_folder}/feat3d_{name_id}{expressions[face_path[-14:-12]]}_{face_path[-11]}.obj"
-        
-        #if expression == "Angry" and i == 5:
-        #    create_2d_feature(input_name, output_name, True)
-        #else:
-        read_wrl_and_create_obj(input_name, output_name)
-        
-        print(f"In: {input_name}\nOut: {output_name}\n")
+            print(f"In: {input_name}\nOut: {output_name}\n")
     
     
     
