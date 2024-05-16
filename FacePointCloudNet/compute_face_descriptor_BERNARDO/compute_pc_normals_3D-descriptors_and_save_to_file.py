@@ -6,14 +6,12 @@ from pathlib import Path
 from glob import glob
 from tqdm import tqdm
 import torch
+from sklearn.preprocessing import normalize
 
 import pcl
-#parent_directory = os.path.abspath('..')
-#sys.path.append(parent_directory)
-#print(parent_directory)
-#sys.path.append("/cluster/home/emmalei/Master_project_network/FacePointCloudNet/pointnet2")
+
 from train.train_triplet import *
-#/cluster/home/emmalei/Master_project_network/FacePointCloudNet/pointnet2/train/train_triplet.py
+
 
 def parse_args():
     parser = argparse.ArgumentParser(
@@ -142,14 +140,9 @@ def get_normals(cloud, radius=30):
 
 
 def get_pointcloud_with_normals(cloud):
-    # print('cloud:', cloud)
     cloud_with_normals = cloud.to_array()
     normals = get_normals(cloud)
-    # print('cloud_with_normals:', cloud_with_normals)
-    # print('normals:', normals)
     cloud_with_normals = np.hstack((cloud_with_normals, normals))
-    # print('cloud_with_normals.shape:', cloud_with_normals.shape)
-    # print('cloud_with_normals:', cloud_with_normals)
     return cloud_with_normals
 
 
@@ -170,91 +163,48 @@ def filter_points_by_radius(cloud, keypoint_ref, radius=90.0):
 def preprocess_pointcloud_with_normals(pc_with_normals):
     point_set = pc_with_normals
     # normalize
-    # point_set[:, 0:3] = (point_set[:, 0:3]) / 0.1  # BERNARDO
-    # point_set[:, 0:3] = (point_set[:, 0:3]) / 1         # BERNARDO
-    # point_set[:, 0:3] = (point_set[:, 0:3]) / 10      # BERNARDO
-    point_set[:, 0:3] = (point_set[:, 0:3]) / 100  # original
-    # point_set[:, 0:3] = (point_set[:, 0:3]) / 200     # BERNARDO
-    # point_set[:, 0:3] = (point_set[:, 0:3]) / 250  # BERNARDO
-    # point_set[:, 0:3] = (point_set[:, 0:3]) / 1000    # BERNARDO
-    # point_set[:, 0:3] = (point_set[:, 3:6]) / 100  # original
-    # point_set[:, 0:-1] = (point_set[:, 0:-1]) / 100  # BERNARDO
-    # point_set[:, 0:-1] = (point_set[:, 0:-1]) / 1000  # BERNARDO
+    point_set[:, 0:3] = (point_set[:, 0:3]) / 100 
     point_set = torch.from_numpy(point_set)
-    # point_set[:, 6] = torch.pow(point_set[:, 6], 2)
-    # point_set[:, 6] = torch.pow(point_set[:, 6], 0.1)
-    # point_set[:, 6] = torch.pow(point_set[:, 6], 0.5)
-    # point_set[:, 6] = torch.pow(point_set[:, 6], 1.5)
-    # point_set[:, 6] = torch.pow(point_set[:, 6], -1.5)
-    # print('point_set.shape:', point_set.shape)
 
     input = point_set
     input = input.unsqueeze(0).contiguous()
     input = input.to("cuda", non_blocking=True)
-    # print('input.shape:', input.shape)
+  
     return input
 
 
 
 def load_pc_and_compute_normals(args, model, folder):
-    # image_paths = sorted(glob(folder + '/*.obj')) + sorted(glob(folder + '/*.ply'))
-    # image_paths = sorted(glob(folder + '/*.obj'))
-    #image_paths = sorted(glob(folder + '/*' + args.file_ext))
     image_paths = sorted(os.listdir(folder))
-    print(image_paths)
+
     for image_path_OBJ in tqdm(image_paths):
-        ### image_path_PLY = image_path_OBJ.replace('.obj', '.ply')
-        # print('image_path:', image_path)
+
         name = Path(image_path_OBJ).stem
-        #print(name)
-        # print('name:', name)
+
         print('Loading point cloud:', image_path_OBJ)
         cloud_from_OBJ = pcl.load(folder+"/"+image_path_OBJ)
-        ### cloud_from_PLY = pcl.load(image_path_PLY)
-        # print('cloud_from_OBJ.to_array().shape:', cloud_from_OBJ.to_array().shape)
-        # print('cloud_from_PLY.to_array().shape:', cloud_from_PLY.to_array().shape)
 
-        # TODO: Add these again when dealing with BU3D-FE and BU4D-FE
+
+        # Can be used for cropping later
         #path_key_points = '/'.join(image_path_OBJ.split('/')[:-1]) + '/' + 'kpt68.npy'
         #key_points = pcl.load(path_key_points)
         #cloud_from_OBJ = filter_points_by_radius(cloud_from_OBJ, key_points[30], radius=args.crop_face_radius_from_nose_tip)
 
         pc_with_normals_from_OBJ = get_pointcloud_with_normals(cloud_from_OBJ)
-        ### pc_with_normals_from_PLY = get_pointcloud_with_normals(cloud_from_PLY)
-        # print('pc_with_normals_from_OBJ.shape:', pc_with_normals_from_OBJ.shape)
-        # print('pc_with_normals_from_PLY.shape:', pc_with_normals_from_PLY.shape)
 
         pc_with_normals_from_OBJ = preprocess_pointcloud_with_normals(pc_with_normals_from_OBJ)
-        ### pc_with_normals_from_PLY = preprocess_pointcloud_with_normals(pc_with_normals_from_PLY)
-
-        path_pc_with_normals_from_OBJ = f'the_dump/{name}_with_normals.pt'
-        ### path_pc_with_normals_from_PLY = image_path_PLY.replace('.ply', '_PLY_with_normals.pt')
-        print('Saving mesh with normals:', path_pc_with_normals_from_OBJ, end=' ... ')
-        torch.save(pc_with_normals_from_OBJ, path_pc_with_normals_from_OBJ)
-        ### torch.save(pc_with_normals_from_PLY, path_pc_with_normals_from_PLY)
-        print('Saved!')
 
 
         print('Computing 3D face descriptor ...')
-        #p_feature_from_OBJ = torch.zeros((1, 1, 512))  # BERNARDO
-        ### p_feature_from_PLY = torch.zeros((1, 1, 512))  # BERNARDO
+
         feat_from_OBJ = model.forward(pc_with_normals_from_OBJ)  # 1x512
-        ### feat_from_PLY = model.forward(pc_with_normals_from_PLY)  # 1x512
-        #p_feature_from_OBJ[:, :, :] = feat_from_OBJ.cpu()  # 1x1x512
-        ### p_feature_from_PLY[:, :, :] = feat_from_PLY.cpu()  # 1x1x512
-        #p_feature_norm_from_OBJ = torch.norm(p_feature_from_OBJ, p=2, dim=2)
-        ### p_feature_norm_from_PLY = torch.norm(p_feature_from_PLY, p=2, dim=2)
-        path_feat_norm_from_OBJ = f'/cluster/home/emmalei/Master_project_network/feature_vectors/train/3d/{name}.pt' #_3D_face_descriptor
-        ### path_feat_norm_from_PLY = image_path_PLY.replace(name+'.ply', '3D_face_descriptor_from_PLY.pt')
+        path_feat_norm_from_OBJ = f'/cluster/home/emmalei/Master_project_network/feature_vectors/test/3d/{name}.pt' #_3D_face_descriptor
+
         print('Saving 3D face descriptor:', path_feat_norm_from_OBJ, end=' ... ')
-        torch.save(feat_from_OBJ, path_feat_norm_from_OBJ)
-        ### torch.save(feat_from_PLY, path_feat_norm_from_PLY)
+        
+
+        torch.save(feat_from_OBJ.cpu().detach().numpy()[0], path_feat_norm_from_OBJ)
         print('Saved!')
-                
-        # loaded_feat_from_OBJ = torch.load(path_feat_norm_from_OBJ)
-        # loaded_feat_from_PLY = torch.load(path_feat_norm_from_PLY)
-        # print(loaded_feat_from_OBJ.shape, 'loaded_feat_from_OBJ[:,0:10]:', loaded_feat_from_OBJ[:,0:10])
-        # print(loaded_feat_from_PLY.shape, 'loaded_feat_from_PLY[:,0:10]:', loaded_feat_from_PLY[:,0:10])
 
 
 
@@ -292,57 +242,21 @@ def main(args):
     # load dataset (LFW and TALFW)
     print('face_recognition_3d_descriptor.py: main(): Loading sub-folders of dataset', args.dataset_path, '...')
 
-    """if args.dataset_size == 'whole':    # loads whole dataset
-        sub_folders = Tree().get_all_sub_folders(args.dataset_path)   # NORMAL
-        # print('sub_folders:', sub_folders)
-
-    elif args.dataset_size == 'subset':  # loads only a dataset subset for fast tests
-        sub_folders = Tree().get_subsample_lfw_subjects_and_samples_names(args.dataset_path)
-
-    # print('sub_folders:', sub_folders)
-    print('len(sub_folders):', len(sub_folders))"""
-    # sys.exit(0)
-
     model = build_Pointnet_model(args)
-
-    # compute and save point cloud normals to disk
-    # for i in range(10):  # range(len(sub_folders))
-    #for i in range(len(sub_folders)):
-    #    sub_folder = sub_folders[i]
-    #    print('face_recognition_3d_descriptor.py: main(): sub_folder=' + str(i) + '/' + str(len(sub_folders)))
-    #    print('sub_folder:', sub_folder)
-    load_pc_and_compute_normals(args, model, "pcd_folder_train")
+    load_pc_and_compute_normals(args, model, "wrl_pcd_test")
 
 
 
 if __name__ == '__main__':
-    # sys.argv += ['-epochs', '100']
-    # print('__main__(): sys.argv=', sys.argv)
+
 
     sys.argv += ['-model_checkpoint', '/cluster/home/emmalei/Master_project_network/FacePointCloudNet/checkpoints/20191028_1000cls_model_best']
 
-    sys.argv += ['-dataset_path', '/cluster/home/emmalei/Master_project_network/FacePointCloudNet/compute_face_descriptor_BERNARDO/pcd_folder_train']
-    # sys.argv += ['-dataset_path', '/home/bjgbiesseck/GitHub/MICA/demo/output/TALFW']
+    sys.argv += ['-dataset_path', '/cluster/home/emmalei/Master_project_network/FacePointCloudNet/compute_face_descriptor_BERNARDO/wrl_pcd_test']
 
-    #sys.argv += ['-dataset_size', 'subset']
     sys.argv += ['-dataset_size', 'whole']
 
-    # sys.argv += ['-crop_face_radius_from_nose_tip', '7.0']
-    # sys.argv += ['-crop_face_radius_from_nose_tip', '10.0']
-    # sys.argv += ['-crop_face_radius_from_nose_tip', '20.0']
-    # sys.argv += ['-crop_face_radius_from_nose_tip', '30.0']
-    # sys.argv += ['-crop_face_radius_from_nose_tip', '40.0']
-    # sys.argv += ['-crop_face_radius_from_nose_tip', '50.0']
-    # sys.argv += ['-crop_face_radius_from_nose_tip', '90.0']
-    # sys.argv += ['-crop_face_radius_from_nose_tip', '120.0']
-    #sys.argv += ['-crop_face_radius_from_nose_tip', '150.0']
-    # sys.argv += ['-crop_face_radius_from_nose_tip', '200.0']
-
-    #sys.argv += ['-file_ext', '.obj']
-    #sys.argv += ['-file_ext', '.ply']
-    # sys.argv += ['-file_ext', '.xyz']    # upsampling point cloud (Meta-PU model)
-
     args = parse_args()
-    # print('__main__(): args=', args)
+
 
     main(args)

@@ -1,18 +1,15 @@
 import os
 import numpy as np
 
-# NOTICE: Current system is set up for FaceGen generated face pairs,
-# so a new system will be used for BU3D-FE and BU4D-FE
-
-path_feat_2d = "feature_vectors/validation/2d"
-path_feat_3d = "feature_vectors/validation/3d"
-path_save_file = "feature_vectors/validation/"
+path_feat_2d = "feature_vectors/train/2d-GhostNet-FaceGen"
+path_feat_3d = "feature_vectors/train/3d-Face3D-FaceGen"
+path_save_file = "feature_vectors/train/"
 
 pairing_array = []
 pairing_array.append(["2d","3d","label"]) # labels for the .csv file
 
-feature_vectors_2d = ["2d/"+ feat for feat in sorted(os.listdir(path_feat_2d))]
-feature_vectors_3d = ["3d/"+ feat for feat in sorted(os.listdir(path_feat_3d))]
+feature_vectors_2d = ["2d-GhostNet-FaceGen/"+ feat for feat in sorted(os.listdir(path_feat_2d))]
+feature_vectors_3d = ["3d-Face3D-FaceGen/"+ feat for feat in sorted(os.listdir(path_feat_3d))]
 
 # Assuming we have an equal amount of 2d and 3d feature vectors
 number_of_pairings = len(feature_vectors_2d)
@@ -46,23 +43,23 @@ for i in range(quarter_amount):
 # Other half is incorrectly matched in various ways
 for i in range(twelfth_amount):
     # Incorrect pairing female.jpg female.obj
-    pairing_array.append([feature_vectors_2d[second_segment_start + i], feature_vectors_3d[third_segment_start + i], str(0)])
+    pairing_array.append([feature_vectors_2d[second_segment_start + i], feature_vectors_3d[third_segment_start + i], str(-1)])
     
     # Incorrect pairing female.jpg female.obj
-    pairing_array.append([feature_vectors_2d[third_segment_start + i], feature_vectors_3d[second_segment_start + i], str(0)])
+    pairing_array.append([feature_vectors_2d[third_segment_start + i], feature_vectors_3d[second_segment_start + i], str(-1)])
 
     # Incorrect pairing female.jpg male.obj
-    pairing_array.append([feature_vectors_2d[forth_segment_start + i], feature_vectors_3d[fifth_segment_start + i], str(0)])
+    pairing_array.append([feature_vectors_2d[forth_segment_start + i], feature_vectors_3d[fifth_segment_start + i], str(-1)])
     
     # Incorrect pairing male.jpg female.obj
-    pairing_array.append([feature_vectors_2d[fifth_segment_start + i], feature_vectors_3d[forth_segment_start + i], str(0)])
+    pairing_array.append([feature_vectors_2d[fifth_segment_start + i], feature_vectors_3d[forth_segment_start + i], str(-1)])
     
     # Incorrect pairing male.jpg male.obj
-    pairing_array.append([feature_vectors_2d[sixth_segment_start + i], feature_vectors_3d[seventh_segment_start + i], str(0)])
+    pairing_array.append([feature_vectors_2d[sixth_segment_start + i], feature_vectors_3d[seventh_segment_start + i], str(-1)])
 
     # Incorrect pairing male.jpg male.obj
-    pairing_array.append([feature_vectors_2d[seventh_segment_start + i], feature_vectors_3d[sixth_segment_start + i], str(0)])
+    pairing_array.append([feature_vectors_2d[seventh_segment_start + i], feature_vectors_3d[sixth_segment_start + i], str(-1)])
 
 # Save the array as a .csv
-np.savetxt(f"{path_save_file}feature_pairings.csv", pairing_array, delimiter=",", fmt='%s')
+np.savetxt(f"{path_save_file}feature_pairings_FaceGen.csv", pairing_array, delimiter=",", fmt='%s')
 print(f"Feature pairings saved to {path_save_file}feature_pairings.csv")
