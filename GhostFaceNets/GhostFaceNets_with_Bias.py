@@ -1,15 +1,15 @@
 import tensorflow as tf
 from tensorflow import keras
 import tensorflow.keras.backend as K
-
+from .backbones.ghost_model import GhostNet
 
 def __init_model_from_name__(name, input_shape=(512, 512, 3), weights="imagenet", **kwargs):
     name_lower = name.lower()
     """ Basic model """
     if name_lower == "ghostnetv1":
-        from backbones import ghost_model
+        #from backbones.ghost_model import GhostNet
 
-        xx = ghost_model.GhostNet(input_shape=input_shape, include_top=False, width=1.3, **kwargs)
+        xx = GhostNet(input_shape=input_shape, include_top=False, width=1.3, **kwargs)
     
     elif name_lower == "ghostnetv2":
         from backbones import ghostv2
