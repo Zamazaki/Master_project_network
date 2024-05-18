@@ -8,6 +8,9 @@ import torch
 
 # All .obj files in the dataset used have the same amount of vertices, so we do a little cheat >:^)
 
+mode = "validation"
+data_folder = "obj_face_batch_val"
+
 # Prefers to have gpu
 os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
@@ -16,7 +19,7 @@ is_training_pl = tf.placeholder(tf.bool, shape=())
 pointclouds_pl, labels_pl = ldgcnn.models.ldgcnn.placeholder_inputs(1, 5904)
 
 # Set up for batch creation of feature vectors
-point_cloud_paths = os.listdir("obj_face_batch")
+point_cloud_paths = os.listdir(data_folder)
 feature_counter = 0 # To name the created feature vectors. Update after running a batch so we don't overwrite the next batch
 
 # Create a session
@@ -36,7 +39,7 @@ with tf.Session(config=config) as sess:
         
         for path in point_cloud_paths:
             # Gives out tensor of size (N, 3) where N is amount of points
-            point_cloud = torch.tensor(read_obj("./obj_face_batch/"+path)) 
+            point_cloud = torch.tensor(read_obj(f"./{data_folder}/{path}")) 
             
             # Input point cloud needs to be size (B, N, 3) where B is batch size. The model also wants it as a ndarray
             point_cloud = np.expand_dims(point_cloud.numpy(), 0)
@@ -48,7 +51,7 @@ with tf.Session(config=config) as sess:
             global_feature = np.squeeze(model.eval(feed_dict=feed_dict_cnn))
 
             # Save feature vector
-            torch.save(global_feature, f"feature_vectors/3d/feat3d_{feature_counter}.pt")
-            print(f"Converted feature_vectors/3d/feat3d_{feature_counter}.pt")
+            torch.save(global_feature, f"feature_vectors/{mode}/3d/feat3d_{feature_counter}.pt")
+            print(f"Converted feature_vectors/{mode}/3d/feat3d_{feature_counter}.pt")
             feature_counter += 1
 print(f"3D files converted, feature counter is now {feature_counter}")
