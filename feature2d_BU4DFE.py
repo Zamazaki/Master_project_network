@@ -38,7 +38,7 @@ input_folder = "/cluster/home/emmalei/Master_project_network/BU4DFE"
 output_folder = "/cluster/home/emmalei/Master_project_network/feature_vectors/train/2d-normalized"
 
 id_list = sorted(glob(os.path.join(input_folder, "*", "")))
-id_list.remove("/cluster/home/emmalei/Master_project_network/BU4DFE/BU_WrlViewer_V2/")
+id_list.remove(input_folder+"/BU_WrlViewer_V2/")
 
 # Uncomment to get validation set
 #chosen_frames = [3, 4, 26, 27]
