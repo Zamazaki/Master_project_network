@@ -35,7 +35,7 @@ def create_2d_feature(input_name, output_name, save_sample):
     torch.save(normalize(feature_embedding.numpy())[0], output_name)
     
 input_folder = "/cluster/home/emmalei/Master_project_network/BU4DFE"
-output_folder = "/cluster/home/emmalei/Master_project_network/feature_vectors/train/2d-normalized"
+output_folder = "/cluster/home/emmalei/Master_project_network/feature_vectors/train/2d"
 
 id_list = sorted(glob(os.path.join(input_folder, "*", "")))
 id_list.remove(input_folder+"/BU_WrlViewer_V2/")
