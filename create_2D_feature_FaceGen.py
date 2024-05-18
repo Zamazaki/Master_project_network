@@ -30,7 +30,7 @@ for image_path in image_paths:
     feature_embedding = basic_model(downscaled_face)[0]
     
     torch.save(feature_embedding.numpy(), f"feature_vectors/{mode}/2d/feat2d_{feature_counter}.pt")
-    print(f"Saved feature_vectors/{mode}/2d/feat2d_{feature_counter}.pt")
+    print(f"Saved feature_vectors/{mode}/2d-GhostNet-FaceGen/feat2d_{feature_counter}.pt")
     feature_counter += 1
 
 print(f"Images converted, feature counter is now {feature_counter}")
