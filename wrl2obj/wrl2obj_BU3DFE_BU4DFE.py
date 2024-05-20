@@ -80,28 +80,47 @@ def read_wrl_and_create_obj(in_file, out_file):
     
     return data
 
-input_folder = "/cluster/home/emmalei/Master_project_network/BU4DFE"
-output_folder = "/cluster/home/emmalei/Master_project_network/wrl_obj_validation"
+input_folder = "/cluster/home/emmalei/Master_project_network/BU3DFE"
+output_folder = "/cluster/home/emmalei/Master_project_network/wrl_obj_test"
 
-id_list = sorted(glob(os.path.join(input_folder, "*", "")))[78:] #/cluster/home/emmalei/Master_project_network/BU4DFE/M034/
+id_list = sorted(glob(os.path.join(input_folder, "*", "")))
+
+# Uncomment if converting BU-4DFE
 #id_list.remove("/cluster/home/emmalei/Master_project_network/BU4DFE/BU_WrlViewer_V2/")
-print(id_list)
-chosen_frames = [3, 4, 26, 27]
 
-for id in id_list:
-    name_id = id[-5]+id[-3:-1]
+expressions = {"AN":"ANG", "DI":"DIS", "FE":"FEA", "HA":"HAP", "NE":"NEU", "SA":"SAD", "SU":"SUR"}
+
+#BU4DFE
+"""for id in id_list:
+    name_id = id[-5]+id[-3:-1] # Gets gender and number for use in naming convention
     expression_folder = sorted(os.listdir(id))
     for expression in expression_folder:
         name_expression = expression[:3].upper()
-        for i in range(1, 5):
-            input_name = os.path.join(input_folder, id, expression, f'{chosen_frames[i-1]:03d}.wrl')
-            output_name = f"{output_folder}/feat3d_{name_id}{name_expression}_{i}.obj"
+        for i in range(5, 26): # Use only instenisty frames 5 to 25
+            input_name = os.path.join(input_folder, id, expression, f'{i:03d}.wrl') # File name of specific frame in expression of an identity
+            output_name = f"{output_folder}/feat3d_{name_id}{name_expression}_{i-5}.obj" # New file name following naming convention
             read_wrl_and_create_obj(input_name, output_name)
             
-            print(f"In: {input_name}\nOut: {output_name}\n")
+            print(f"In: {input_name}\nOut: {output_name}\n")"""
+
+
+# BU3DFE
+for id in id_list:
+    name_id = id[-6]+id[-3:-1] # Gets gender and number for use in naming convention
+    faces_3d = sorted(glob(os.path.join(input_folder, id, '*F3D.wrl'))) # Get all 3D face files
+    for face_path in faces_3d: 
+        input_name = face_path
+        output_name = f"{output_folder}/feat3d_{name_id}{expressions[face_path[-14:-12]]}_{face_path[-11]}.obj"
+        
+        read_wrl_and_create_obj(input_name, output_name)
+        
+        print(f"In: {input_name}\nOut: {output_name}\n")
     
-    
-    
+# Naming covention: feat2d_F01ANG_1.pt
+# F01 means female identity number 01
+# ANG is the current expression
+# 1 is the current intensity of the frame (goes from 1 to 4 for BU-3DFE, and 1 to 20 for BU-4DFE)    
+
     # Mostly to debug:
     # Save obj
     # fp = open("001-001.obj", 'w')
