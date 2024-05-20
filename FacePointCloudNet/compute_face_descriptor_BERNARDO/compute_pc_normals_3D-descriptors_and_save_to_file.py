@@ -192,17 +192,17 @@ def load_pc_and_compute_normals(args, model, folder):
 
         pc_with_normals_from_OBJ = get_pointcloud_with_normals(cloud_from_OBJ)
 
-        pc_with_normals_from_OBJ = preprocess_pointcloud_with_normals(pc_with_normals_from_OBJ)
+        pc_with_normals_from_OBJ = preprocess_pointcloud_with_normals(pc_with_normals_from_OBJ)# 3D_face_descriptor
 
 
         print('Computing 3D face descriptor ...')
 
         feat_from_OBJ = model.forward(pc_with_normals_from_OBJ)  # 1x512
-        path_feat_norm_from_OBJ = f'/cluster/home/emmalei/Master_project_network/feature_vectors/test/3d/{name}.pt' #_3D_face_descriptor
+        path_feat_norm_from_OBJ = f'{output_folder}{name}.pt' # output path to the feature
 
         print('Saving 3D face descriptor:', path_feat_norm_from_OBJ, end=' ... ')
         
-
+        # Save the feature vector
         torch.save(feat_from_OBJ.cpu().detach().numpy()[0], path_feat_norm_from_OBJ)
         print('Saved!')
 
@@ -236,14 +236,15 @@ def build_Pointnet_model(args):
     optimizer.zero_grad()
     return model
 
-
+output_folder = "/cluster/home/emmalei/Master_project_network/feature_vectors/test/3d/"
+input_folder = "wrl_pcd_test"
 
 def main(args):
     # load dataset (LFW and TALFW)
     print('face_recognition_3d_descriptor.py: main(): Loading sub-folders of dataset', args.dataset_path, '...')
-
+    
     model = build_Pointnet_model(args)
-    load_pc_and_compute_normals(args, model, "wrl_pcd_test")
+    load_pc_and_compute_normals(args, model, input_folder)
 
 
 
