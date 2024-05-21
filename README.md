@@ -28,6 +28,68 @@ To also make the validation set. Uncomment all code that says "validation", and 
 ```
 python create_2D_feature_FaceGen.py
 ```
+## Setting up the 3D feature extractor network
+While the 2D feature extractor requires only the simple setup of loading the model and checkpoint, the 3D feature extractor, 3DFacePointCloudNet, has a lot of additional requirements in order to be set up. The reason why the 3DFacePointCloudNet requires a lot of extra setup is due to one of the modules it is using, namely the python-pcl module. It is an attempt at porting the functionality of the C++ Point Cloud Library to python, but the project was archived in 2019 and no longer receives any upkeep. As such, there are a lot of issues running it on newer python versions, and on certain operative systems. The following steps were taken in order to run it on the IDUN cluster at NTNU:
+
+1. Create a container of Ubuntu version 22.04 using Apptainer (documentation: https://www.hpc.ntnu.no/idun/documentation/apptainer/)
+```
+cd /localscratch/
+apptainer build --sandbox pcl_env docker://ubuntu:22.04 
+apptainer shell --no-mount hostfs --fakeroot --writable pcl_env
+```
+  
+2. Install the Point Cloud Library
+```
+sudo echo -e "\ndeb http://ubuntu.c3sl.ufpr.br/ubuntu/ focal main universe" >> /etc/apt/sources.list
+sudo apt update
+sudo apt install libpcl-dev=1.10.0+dfsg-5ubuntu1
+```
+  
+3. Install anaconda for Linux by following the steps in this link:
+https://docs.anaconda.com/free/anaconda/install/linux/
+
+4. Create conda environment
+```
+conda create --name python_pcl_env python=3.7 
+conda activate python_pcl_env 
+conda install pytorch torchvision -c pytorch 
+```
+  
+5. Clone the GitHub repository and setup requirements
+```
+git clone https://github.com/biesseck/3DFacePointCloudNet.git 
+cd 3DFacePointCloudNet 
+pip install -r requirements.txt 
+python setup.py build_ext --inplace 
+python setup.py install 
+pip install -e .
+```
+
+6. Compile and install python-pcl
+```
+cd python-pcl
+python setup.py build_ext -i
+python setup.py install
+```
+
+7. Change accepted versions in environment of pointnet2\_ops
+```
+cd pointnet2_ops
+```
+Switch line 19 of setup.py to:
+```
+os.environ["TORCH_CUDA_ARCH_LIST"] = "5.0;6.0;6.1;6.2;7.0;7.5"
+```
+
+8. Compile and install pointnet2\_ops
+```
+python setup.py build_ext -i 
+python setup.py install
+```
+
+9. The 3DFacePointCloudNet should be able to run outside of the container now
+
+
 ## Extract 3D feature vectors
 1. Enter the conda environment for pytorch. It can be found in the conda_environment_specifications folder. Simply enter the folder and enter the following in the terminal:
 ```
